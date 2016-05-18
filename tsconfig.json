@@ -1,5 +1,5 @@
 {
-    "version": "1.4.1",
+    "version": "1.5.1",
     "compilerOptions": {
         "target": "es5",
         "module": "commonjs",
@@ -14,18 +14,16 @@
         "!./node_modules/**/*.ts",
         "!./chrome_web_components/*.d.ts"
     ],
+    "awesomeTypescriptLoaderOptions": {
+        "resolveGlobs": true,
+        "forkChecker": true
+    },
     "files": [
         "./TypeScriptDefinitionToolkit.ts",
         "./chrome_web_components/generate.ts",
         "./definitely_tested.ts",
         "./source-map-support.d.ts",
         "./test.ts",
-        "./typescript_definition.d.ts",
-        "./typings/glob/glob.d.ts",
-        "./typings/lodash/lodash.d.ts",
-        "./typings/minimatch/minimatch.d.ts",
-        "./typings/node/node.d.ts",
-        "./typings/nodeunit/nodeunit.d.ts",
-        "./typings/tsd.d.ts"
+        "./typings/main.d.ts"
     ]
 }

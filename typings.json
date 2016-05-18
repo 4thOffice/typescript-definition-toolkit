@@ -1,0 +1,11 @@
+{
+  "name": "typescript-definition-parser",
+  "version": false,
+  "ambientDependencies": {
+    "glob": "registry:dt/glob#5.0.10+20160317120654",
+    "lodash": "registry:dt/lodash#3.10.0+20160330154726",
+    "minimatch": "registry:dt/minimatch#2.0.8+20160317120654",
+    "node": "registry:dt/node#6.0.0+20160514165920",
+    "nodeunit": "registry:dt/nodeunit#0.0.0+20160316155526"
+  }
+}
