@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Simon Edwards <simon@simonzone.com>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -65,7 +65,7 @@ start
     {
       return result;
     }
-                 
+
 _ "WhiteSpace" = value:([ \t\r\n\u00A0\uFEFF]*) comment_list:(comment [ \t\r\n\u00A0\uFEFF]*)*
     {
       var result = "";
@@ -85,7 +85,7 @@ __ "MandatoryWhiteSpace" = front:[ \t\r\n\u00A0\uFEFF]? comment_list:(comment [ 
       if (front !== null && front !== undefined) {
         value += front;
       }
-      
+
       if (comment_list !== null) {
         value += comment_list.map( function(cl) { return cl[0] + cl[1].join(""); } ).join("");
       }
@@ -110,7 +110,7 @@ _NoEOL_ "WhiteSpace with no EOL"
       }
       return { type: WHITESPACE, value: result };
     }
-    
+
 
 comment
     = SingleLineComment
@@ -121,7 +121,7 @@ SingleLineComment
 
 SingleLineCommentNoEOL
     = $("//" [^\x0d\x0a]*)
-        
+
 MultiLineComment
     = $("/*" (!"*/" .)* "*/")
 
@@ -260,7 +260,7 @@ declaration_element
     {
       return ws;
     }
-    
+
 export_assignment
     = EXPORT _ EQUALS _ name:Identifier _ SEMI?
     {
@@ -295,7 +295,7 @@ ambient_external_module_element
     {
     return ws;
     }
-    
+
 external_import_declaration
     = IMPORT __ name:Identifier _ EQUALS _ ext:external_module_reference _ SEMI
     {
@@ -361,7 +361,7 @@ constraint
     {
       return type;
     }
-    
+
 type_arguments
     = LANGLE _ list:type_argument_list _ RANGLE
     {
@@ -378,7 +378,7 @@ type_argument_list
       });
       return result;
     }
-    
+
 type_argument
     = type
 
@@ -454,7 +454,7 @@ type_body
         members.push(last[0]);
       }
       return members;
-    }    
+    }
 
 type_body_member
    = tm:type_member _ SEMI
@@ -473,7 +473,7 @@ type_body_member
 type_member
     = signature:call_signature
     {
-      return {type: METHOD, name: "", optional: false, signature: signature, static: false, accessibility: null};
+      return {type: METHOD, name: "", optional: false, signature: signature, isStatic: false, accessibility: null};
     }
     / construct_signature
     / index_signature
@@ -483,12 +483,12 @@ type_member
 // This is changed to avoid left recursion.
 //array_type
 //    = primary_type LSQUARE RSQUARE
-    
+
 array_square = squares:(_ LSQUARE RSQUARE)*
     {
       return squares;
     }
-    
+
 tuple_type
     = LSQUARE _ types:tuple_element_types _ RSQUARE
     {
@@ -541,7 +541,7 @@ type_query
 property_signature
     = name:property_name _ qm:QUESTIONMARK? _ type_annotation:type_annotation?
     {
-      return {type: PROPERTY, name: name, accessibility: null, static: false, optional: qm !== null, signature: type_annotation };
+      return {type: PROPERTY, name: name, accessibility: null, isStatic: false, optional: qm !== null, signature: type_annotation };
     }
 
 property_name
@@ -569,11 +569,11 @@ parameter_list
       if (optionalParameterList !== null) {
         requiredParameterList = requiredParameterList.concat(optionalParameterList[3]);
       }
-      
+
       if (restParameter !== null) {
         requiredParameterList.push(restParameter[3]);
       }
-      
+
       return requiredParameterList;
     }
     / optionalParameterList:optional_parameter_list restParameter:(_ COMMA _ rest_parameter)?
@@ -665,7 +665,7 @@ rest_parameter
 construct_signature
     = NEW _ type_parameters:type_parameters? _ LBRACKET _ parameters:parameter_list? _ RBRACKET type_annotation:(_ type_annotation)?
     {
-      return { type: METHOD, name: "new", optional: false, static: false, accessibility: null,
+      return { type: METHOD, name: "new", optional: false, isStatic: false, accessibility: null,
         signature:  {type: FUNCTION_TYPE, typeParameters: type_parameters, parameters: parameters || [], returnType: type_annotation !== null ? type_annotation[1] : null } };
     }
 
@@ -681,7 +681,7 @@ index_signature
 method_signature
     = name:property_name _ qm:QUESTIONMARK? _ signature:call_signature
     {
-      return { type: METHOD, name:name, optional: qm!==null, static: false, signature: signature, accessibility: null };
+      return { type: METHOD, name:name, optional: qm!==null, isStatic: false, signature: signature, accessibility: null };
     }
 
 type_alias_declaration
@@ -700,14 +700,14 @@ type_annotation
     {
       return type;
     }
-    
+
 import_declaration
     = IMPORT __ name:Identifier _ EQUALS _ en:entity_name _ SEMI
     {
       return { type: IMPORT_DECLARATION, name: name, externalModule: en, export: false, external: false };
     }
-    
-    
+
+
 entity_name
     = name:Identifier rest:(DOT Identifier)*
     {
@@ -716,8 +716,8 @@ entity_name
       } else {
         return name;
       }
-    }        
-        
+    }
+
 /* Ambients */
 ambient_declaration
     = DECLARE __ value:ambient_variable_declaration
@@ -773,7 +773,7 @@ ambient_class_declaration
 
 ambient_class_body
     = ambient_class_body_elements
-    
+
 ambient_class_body_elements
     = members:ambient_class_body_element*
     {
@@ -791,24 +791,24 @@ ambient_class_body_element
     }
 
 ambient_property_member_declaration
-    = access:(accessibility_modifier __)? static:(STATIC __)? name:property_name _ type_annotation:type_annotation? _ SEMI
+    = access:(accessibility_modifier __)? isStatic:(STATIC __)? name:property_name _ type_annotation:type_annotation? _ SEMI
     {
-      return {type: PROPERTY, name: name, accessibility: (access !== null ? access[0] : null), static: static!==null,
+      return {type: PROPERTY, name: name, accessibility: (access !== null ? access[0] : null), isStatic: isStatic!==null,
         optional: false, signature: type_annotation === null ? null : type_annotation };
     }
-    / access:(accessibility_modifier __)? static:(STATIC __)? name:property_name _ signature:call_signature _ SEMI
+    / access:(accessibility_modifier __)? isStatic:(STATIC __)? name:property_name _ signature:call_signature _ SEMI
     {
-      return {type: METHOD, name: name, accessibility: (access !== null ? access[0] : null), static: static !== null,
+      return {type: METHOD, name: name, accessibility: (access !== null ? access[0] : null), isStatic: isStatic !== null,
         optional: false, signature: signature};
     }
-    / access:(accessibility_modifier __)? static:(STATIC __)? name:property_name type_annotation:(_ type_annotation)? _NoEOL_ LineTerminatorSequence
+    / access:(accessibility_modifier __)? isStatic:(STATIC __)? name:property_name type_annotation:(_ type_annotation)? _NoEOL_ LineTerminatorSequence
     {
-      return {type: PROPERTY, name: name, accessibility: (access !== null ? access[0] : null), static: static!==null,
+      return {type: PROPERTY, name: name, accessibility: (access !== null ? access[0] : null), isStatic: isStatic!==null,
         optional: false, signature: type_annotation === null ? null : type_annotation[1] };
     }
-    / access:(accessibility_modifier __)? static:(STATIC __)? name:property_name _ signature:call_signature _NoEOL_ LineTerminatorSequence
+    / access:(accessibility_modifier __)? isStatic:(STATIC __)? name:property_name _ signature:call_signature _NoEOL_ LineTerminatorSequence
     {
-      return {type: METHOD, name: name, accessibility: (access !== null ? access[0] : null), static: static !== null,
+      return {type: METHOD, name: name, accessibility: (access !== null ? access[0] : null), isStatic: isStatic !== null,
         optional: false, signature: signature};
     }
 
@@ -874,7 +874,7 @@ ambient_module_element
 /* Folded this into ambient_class_declaration above.
 class_heritage
     = class_extends_clause implements_clause
-        
+
 class_extends_clause
     = EXTENDS class_type:class_type { return class_type; }
 

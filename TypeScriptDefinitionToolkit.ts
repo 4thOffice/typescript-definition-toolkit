@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Simon Edwards <simon@simonzone.com>
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,13 +16,10 @@
 "use strict";
 
 import _ = require("lodash");
-
-declare module typescript_definition {
-  export function parse(text: string): any;
-}
+import typescript_definition = require("./typescript_definition");
 
 export module Defs {
-
+  
   /**
    * Each object in the tree is tagged with this enum to identify its type.
    */
@@ -54,21 +51,21 @@ export module Defs {
     ARRAY_TYPE = 24,
     PARENTHESIZED_TYPE = 25
   }
-
+  
   /**
    * Base interface for all types which appear in the tree.
    */
   export interface Base {
     type: Type;
   }
-
+  
   export interface NamedBase extends Base {
     /**
      * Name of the item.
      */
     name: string;
   }
-
+  
   /**
    * White space and may be mixed with comments.
    */
@@ -78,7 +75,7 @@ export module Defs {
      */
     value: string;
   }
-
+  
   /**
    * Module
    */
@@ -87,54 +84,54 @@ export module Defs {
      * True if this module is an ambient module.
      */
     ambient: boolean;
-
+    
     /**
      * True if this module is exported.
      */
     export: boolean;
-
+    
     /**
      * List of module members.
      */
     members: Base[];
-
+    
     /**
      * True if this module is an external module.
      */
     external: boolean;
   }
-
+  
   /**
    * Interface
    */
   export interface Interface extends NamedBase {
-
+    
     /**
      * True if this module is an ambient module.
      */
     ambient: boolean;
-
+    
     /**
      * Type parameters for generics.
      */
     typeParameters: TypeParameter[];
-
+    
     /**
      * List of interfaces which this interface extends.
      */
     extends: ObjectTypeRef[];
-
+    
     /**
      * Definition of the interface's members.
      */
     objectType: ObjectType;
-
+    
     /**
      * True if this interface is exported.
      */
     export: boolean;
   }
-
+  
   /**
    * Function
    */
@@ -143,13 +140,13 @@ export module Defs {
      * Function signature.
      */
     signature: FunctionType;
-
+    
     /**
      * True if this module is an ambient module.
      */
     ambient: boolean;
   }
-
+  
   /**
    * Defines a function type/signature.
    */
@@ -158,18 +155,18 @@ export module Defs {
      * List of parameters for generics.
      */
     typeParameters: TypeParameter[];
-
+    
     /**
      * Return type.
      */
     returnType: PrimaryType;
-
+    
     /**
      * List of parameters
      */
     parameters: Parameter[];
   }
-
+  
   /**
    * Parameter for a function.
    */
@@ -178,34 +175,34 @@ export module Defs {
      * Name of the parameter.
      */
     name: string;
-
+    
     /**
      * Accessibility / visibility.
      * One of "public", "private", "protected" or null.
      */
     accessibility: string;
-
+    
     /**
      * True if this is a required parameter.
      */
     required: boolean;
-
+    
     /**
      * True if this is a rest parameter.
      */
     rest: boolean;
-
+    
     /**
      * Initialiser string or null if there is none.
      */
     initialiser: string;
-
+    
     /**
      * Parameter type or null if it is missing.
      */
     parameterType: PrimaryType | SpecializedSignature;
   }
-
+  
   /**
    * Type parameter used in generics.
    */
@@ -214,16 +211,16 @@ export module Defs {
      * Parameter name.
      */
     name: string;
-
+    
     /**
      * Primary type it extends, may be null if missing.
      */
     extends: PrimaryType;
   }
-
+  
   /**
    * Specializing type signature.
-   *
+   * 
    * This is a string literal which appears as the type of a parameter in a
    * function declaration. It acts as a simple pattern to match different
    * overloaded function signatures to different specific values of that
@@ -234,7 +231,7 @@ export module Defs {
      * The string value to match.
      */
     value: string;
-  }
+  } 
 
   // -- Types
   /**
@@ -242,7 +239,7 @@ export module Defs {
    */
   export interface PrimaryType extends Base {
   }
-
+  
   /**
    * An complex object type.
    */
@@ -252,7 +249,7 @@ export module Defs {
      */
     members: Base[];
   }
-
+  
   /**
    * A reference to a named object type.
    */
@@ -261,15 +258,15 @@ export module Defs {
      * Name of the type being refered to.
      */
     name: string;
-
+    
     /**
      * Arguments which specialize any generic type parameters.
      */
     typeArguments: PrimaryType[];
   }
-
+  
   /**
-   * Tuple type.
+   * Tuple type. 
    */
   export interface TupleType extends PrimaryType {
     /**
@@ -277,9 +274,9 @@ export module Defs {
      */
     members: PrimaryType[];
   }
-
+  
   /**
-   * Union type.
+   * Union type. 
    */
   export interface UnionType extends PrimaryType {
     /**
@@ -287,9 +284,9 @@ export module Defs {
      */
     members: PrimaryType[];
   }
-
+  
   /**
-   * Represents a typeof query.
+   * Represents a typeof query. 
    */
   export interface TypeQuery extends PrimaryType {
     /**
@@ -297,7 +294,7 @@ export module Defs {
      */
     value: string;
   }
-
+  
   /**
    * Type describing a constructor function.
    */
@@ -307,7 +304,7 @@ export module Defs {
      */
     signature: FunctionType;
   }
-
+  
   /**
    * Array type.
    */
@@ -327,34 +324,34 @@ export module Defs {
      */
     member: PrimaryType;
   }
-
+  
   // -- end types.
-
+  
   /**
    * Import declaration.
    */
   export interface ImportDeclaration extends Base {
     /**
-     * Local name of the imported module.
+     * Local name of the imported module. 
      */
     name: string;
-
+    
     /**
      * Name of the external module.
      */
     externalModule: string;
-
+    
     /**
      * True if this import is also being exported.
      */
     export: boolean;
-
+    
     /**
      * True for imports which rely on an external module.
      */
     external: boolean;
   }
-
+  
   /**
    * Method
    */
@@ -363,32 +360,32 @@ export module Defs {
      * Name of the method.
      */
     name: string;
-
+    
     /**
      * True if this method is optional.
      */
     optional: boolean;
-
+    
     /**
      * The method signature.
      */
     signature: FunctionType;
-
+    
     /**
      * True if this method is static.
      */
     static: boolean;
-
+    
     /**
      * Accessibility / visibility.
      * One of "public", "private", "protected" or null.
      */
     accessibility: string;
   }
-
+  
   /**
    * Index method.
-   *
+   * 
    * An index method is typically of the form:
    *     interface Foo {
    *       [key: number]: string;
@@ -399,13 +396,13 @@ export module Defs {
      * The index parameter.
      */
     index: Parameter;
-
+    
     /**
      * The return type of the index method.
      */
     returnType: PrimaryType;
   }
-
+    
   /**
    * Property
    */
@@ -414,29 +411,29 @@ export module Defs {
      * Name of the property.
      */
     name: string;
-
+    
     /**
      * True if this method is optional.
      */
     optional: boolean;
-
+    
     /**
      * The method signature.
      */
     signature: FunctionType | PrimaryType;
-
+    
     /**
      * True if this method is static.
      */
     static: boolean;
-
+    
     /**
      * Accessibility / visibility.
      * One of "public", "private", "protected" or null.
      */
     accessibility: string;
   }
-
+  
   /**
    * Type alias
    */
@@ -445,16 +442,16 @@ export module Defs {
      * True if this type alias is an ambient.
      */
     ambient: boolean;
-
+    
     /**
      * The type this type alias represents.
      */
     entity: ObjectType | ObjectTypeRef;
   }
-
+  
   /**
    * Export assignment.
-   *
+   * 
    * This is typically:
    *     export = FooBar;
    */
@@ -464,7 +461,7 @@ export module Defs {
      */
     name: string;
   }
-
+  
   /**
    * Variable
    */
@@ -473,15 +470,15 @@ export module Defs {
      * True if this variable and needs the declare keyword.
      */
     ambient: boolean;
-
+    
     /**
      * The variable's type.
-     *
-     * This may be null.
-     */
+     * 
+     * This may be null. 
+     */    
     signature: FunctionType | PrimaryType;
   }
-
+  
   /**
    * Class
    */
@@ -490,15 +487,15 @@ export module Defs {
      * True if this class is ambient.
      */
     ambient: boolean;
-
+    
     /**
      * Type parameters for generics.
      */
     typeParameters: TypeParameter[];
-
+    
     /**
      * Object type this class extends.
-     *
+     * 
      * This may be null.
      */
     extends: ObjectTypeRef;
@@ -507,22 +504,22 @@ export module Defs {
      * Definition of the class' members.
      */
     objectType: ObjectType;
-
+    
     /**
      * List of types this class implements.
      */
     implements: ObjectTypeRef[];
   }
-
+  
   /**
-   * Enum
+   * Enum 
    */
   export interface Enum extends NamedBase {
     /**
      * True if this class is ambient.
      */
     ambient: boolean;
-
+    
     /**
      * True if this is constant enum.
      */
@@ -532,25 +529,25 @@ export module Defs {
      * True if this enum is exported.
      */
     export: boolean;
-
+    
     /**
      * The list of enum members.
      */
     members: EnumMember[];
   }
-
+  
   /**
-   * Enum member
+   * Enum member 
    */
   export interface EnumMember extends Base {
     /**
      * Name of this member.
      */
     name: string;
-
+    
     /**
      * Enum value.
-     *
+     * 
      * This may be null. Numeric values are just represented as strings.
      */
     value: string;
@@ -569,61 +566,61 @@ export function parse(text: string): Defs.Base[] {
 
 /**
  * Format a Base object or objects into a string.
- *
+ * 
  * This is basically the reverse of parse(). It takes the parsed structure
  * formats it into a string.
- *
+ *    
  * @return formatted string.
  */
 export function toString(objOrList: Defs.Base | Defs.Base[], level: number=0, indent: string = "    "): string {
-
+  
   if (Array.isArray(objOrList)) {
     return listToString( <Defs.Base[]> objOrList);
   }
-
+  
   const obj = <Defs.Base> objOrList;
   let result: string;
   let dent: string = "";
   for (let i=level; i>0; i--) {
     dent += indent;
   }
-
+  
   switch (obj.type) {
       case Defs.Type.WHITESPACE:
         const ws = <Defs.WhiteSpace> obj;
         return ws.value;
         break;
-
+        
       case Defs.Type.MODULE:
         const mod = <Defs.Module> obj;
         return dent + (mod.ambient ? "declare " : "") + (mod.export ? "export " : "") +
           "module " + (mod.external ? "'" + mod.name + "'" : mod.name) + " {\n" + listToString(mod.members, level+1) + "}\n";
         break;
-
+        
       case Defs.Type.INTERFACE:
         const inter = <Defs.Interface> obj;
         result = dent + (inter.ambient ? "declare " : "") + (inter.export ? "export " : "");
         result += "interface " + inter.name;
-
+          
         if (inter.typeParameters !== null && inter.typeParameters.length !==0) {
           result += "<";
           result += inter.typeParameters.map( (p) => toString(p) ).join(", ");
           result += ">";
         }
-
+        
         if (inter.extends !== null && inter.extends.length !== 0) {
           result += " extends " + inter.extends.map( (e) => toString(e) ).join(", ");
         }
-
+        
         result += " {\n" + listToString(inter.objectType.members, level+1) + "\n" + dent + "}\n";
         return result;
         break;
-
+        
       case Defs.Type.FUNCTION:
         const func = <Defs.Function> obj;
         return dent + (func.ambient ? "declare " : "") + "function " + func.name + toString(func.signature) + ";";
         break;
-
+        
       case Defs.Type.FUNCTION_TYPE:
         const funcType = <Defs.FunctionType> obj;
 
@@ -633,26 +630,26 @@ export function toString(objOrList: Defs.Base | Defs.Base[], level: number=0, in
           result += funcType.typeParameters.map( (p) => toString(p) ).join(", ");
           result += ">";
         }
-
+        
         result += "(";
         result += funcType.parameters.map( (p) => toString(p, level, indent) ).join(", ");
         result += ")";
         result += (funcType.returnType !== null ? (": "+ toString(funcType.returnType)) : "");
         return result;
         break;
-
+        
       case Defs.Type.PARAMETER:
         const param = <Defs.Parameter> obj;
         return (param.rest ? "..." : "") + param.name +
                 (param.required === false && param.rest === false ? "?" :"") +
                 (param.parameterType !== null ? ": " + toStringFunctionSignature(param.parameterType) : "");
         break;
-
+        
       case Defs.Type.OBJECT_TYPE:
         const objType = <Defs.ObjectType> obj;
         return "{" + listToString(objType.members, level+1, indent) + "}";
         break;
-
+        
       case Defs.Type.OBJECT_TYPE_REF:
         const objTypeRef = <Defs.ObjectTypeRef> obj;
         result = objTypeRef.name;
@@ -663,23 +660,23 @@ export function toString(objOrList: Defs.Base | Defs.Base[], level: number=0, in
         }
         return result;
         break;
-
+        
       case Defs.Type.ARRAY_TYPE:
         const arrayType = <Defs.ArrayType> obj;
         return toString(arrayType.member) + "[]";
         break;
-
+        
       case Defs.Type.TYPE_QUERY:
         const typeQuery = <Defs.TypeQuery> obj;
         return "typeof " + typeQuery.value;
         break;
-
+        
       case Defs.Type.IMPORT_DECLARATION:
         const dec = <Defs.ImportDeclaration> obj;
         return dent + (dec.export ? "export " : "") + "import " + dec.name + " = " +
           (dec.external ? "require('"+ dec.externalModule + "')" : dec.externalModule) + ";\n";
         break;
-
+        
       case Defs.Type.METHOD:
         const method = <Defs.Method> obj;
         result = dent;
@@ -691,7 +688,7 @@ export function toString(objOrList: Defs.Base | Defs.Base[], level: number=0, in
         result += ";";
         return result;
         break;
-
+        
       case Defs.Type.PROPERTY:
         const prop = <Defs.Property> obj;
         result = dent;
@@ -702,43 +699,43 @@ export function toString(objOrList: Defs.Base | Defs.Base[], level: number=0, in
         result += ";";
         return result;
         break;
-
+        
       case Defs.Type.TYPE_ALIAS:
         const typeAlias = <Defs.TypeAlias> obj;
         return dent + (typeAlias.ambient ? "declare " : "") + "type " + typeAlias.name + " = " + toStringFunctionSignature(typeAlias.entity) + ";";
         break;
-
+        
       case Defs.Type.INDEX_METHOD:
         const indexMethod = <Defs.IndexMethod> obj;
         return dent + "[" + toString(indexMethod.index) + "]: " + toString(indexMethod.returnType) + ";";
         break;
-
+        
       case Defs.Type.TYPE_PARAMETER:
         const typeParameter = <Defs.TypeParameter> obj;
         return typeParameter.name + ( typeParameter.extends !== null ? " extends " + toString(typeParameter.extends) : "");
         break;
-
+        
       case Defs.Type.TUPLE_TYPE:
         const tuple = <Defs.TupleType> obj;
         return "[" + tuple.members.map( (t) => toString(t, level+1, indent) ).join(", ") + "]";
         break;
-
+        
       case Defs.Type.UNION_TYPE:
         const union = <Defs.UnionType> obj;
         return union.members.map( (m) => toString(m) ).join("|");
         break;
-
+          
       case Defs.Type.EXPORT_ASSIGNMENT:
         const exportAssign = <Defs.ExportAssignment> obj;
         return dent + "export = " + exportAssign.name + ";\n";
         break;
-
+        
       case Defs.Type.AMBIENT_VARIABLE:
         const ambientVariable = <Defs.Variable> obj;
         return dent + (ambientVariable.ambient ? "declare " : "") + " var " + ambientVariable.name +
           (ambientVariable.signature === null ? "" : ": " + toStringFunctionSignature(ambientVariable.signature)) +  ";\n";
         break;
-
+        
       case Defs.Type.CLASS:
         const classDec = <Defs.Class> obj;
         result = dent;
@@ -758,7 +755,7 @@ export function toString(objOrList: Defs.Base | Defs.Base[], level: number=0, in
         result += " {\n" + listToString(classDec.objectType.members, level+1, indent) + "}\n";
         return result;
         break;
-
+        
       case Defs.Type.ENUM:
         const enumDecl = <Defs.Enum> obj;
         result = "";
@@ -781,12 +778,12 @@ export function toString(objOrList: Defs.Base | Defs.Base[], level: number=0, in
         result += "}\n";
         return result;
         break;
-
+        
       case Defs.Type.SPECIALIZED_SIGNATURE:
         const specicalizedSignature = <Defs.SpecializedSignature> obj;
         return '"' + specicalizedSignature.value + '"';
         break;
-
+        
       case Defs.Type.CONSTRUCTOR_TYPE:
         const constructorType = <Defs.ConstructorType> obj;
 
@@ -796,14 +793,14 @@ export function toString(objOrList: Defs.Base | Defs.Base[], level: number=0, in
           result += constructorType.signature.typeParameters.map( (p) => toString(p) ).join(", ");
           result += ">";
         }
-
+        
         result += "(";
         result += constructorType.signature.parameters.map( (p) => toString(p, level, indent) ).join(", ");
         result += ")";
         result += (constructorType.signature.returnType !== null ? (" => "+ toString(constructorType.signature.returnType)) : "");
         return result;
         break;
-
+        
       case Defs.Type.PARENTHESIZED_TYPE:
         const parenthesizedType = <Defs.ParenthesizedType> obj;
         return '(' + toString(parenthesizedType.member) + ')';
@@ -821,9 +818,9 @@ function listToString(obj: Defs.Base[], level: number=0, indent: string = "    "
 
 function toStringFunctionSignature(obj: Defs.Base, level: number=0,
     indent: string = "    "): string {
-
+      
   let result: string;
-
+  
   switch (obj.type) {
       case Defs.Type.FUNCTION_TYPE:
         let funcType = <Defs.FunctionType> obj;
@@ -859,7 +856,7 @@ export interface ScopedInterface {
 
 /**
  * Find all interface declarations by path.
- *
+ * 
  * @param scope list of Defs.Bases to scan through.
  * @param interfaceName Path to the desired interface. This is a dotted
  *     path which may traverse modules, interfaces and classes.
@@ -877,7 +874,7 @@ export interface ScopedClass {
 
 /**
  * Find all class declarations by path.
- *
+ * 
  * @param scope list of Defs.Bases to scan through.
  * @param className Path to the desired class. This is a dotted
  *     path which may traverse modules, interfaces and classes.
@@ -895,7 +892,7 @@ export interface ScopedVariable {
 
 /**
  * Find all variable declarations by path.
- *
+ * 
  * @param scope list of Defs.Bases to scan through.
  * @param className Path to the desired variable. This is a dotted
  *     path which may traverse modules, interfaces and classes.
@@ -912,16 +909,16 @@ function getScopeMembers(scope: Scope): Defs.Base[] {
   } else {
     const obj = <Defs.Base> scope;
     switch(obj.type) {
-
+      
       case Defs.Type.INTERFACE:
         return (<Defs.Interface> obj).objectType.members;
-
+        
       case Defs.Type.CLASS:
         return (<Defs.Class> obj).objectType.members;
-
+        
       case Defs.Type.MODULE:
         return (<Defs.Module> obj).members;
-
+      
       default:
         return [];
     }
@@ -947,19 +944,19 @@ function searchByPathList(scope: Scope, pathList: string[]): ScopedItem[] {
       case Defs.Type.MODULE:
         return (<Defs.Module> item).name === first;
         break;
-
+        
       case Defs.Type.INTERFACE:
         return (<Defs.Interface> item).name === first;
         break;
-
+        
       case Defs.Type.CLASS:
         return (<Defs.Class> item).name === first;
         break;
-
+        
       case Defs.Type.AMBIENT_VARIABLE:
         return (<Defs.Variable> item).name === first;
         break;
-
+        
       default:
         return false;
     }
@@ -976,7 +973,7 @@ function searchByPathList(scope: Scope, pathList: string[]): ScopedItem[] {
           case Defs.Type.CLASS:
             return searchByPathList(match.item, rest);
             break;
-
+            
           default:
             return [];
         }
@@ -988,7 +985,7 @@ function searchByPathList(scope: Scope, pathList: string[]): ScopedItem[] {
 
 /**
  * Resolve an identifier in the context of a list of scopes.
- *
+ * 
  * @param identifier Dotted identifier name to resolve.
  * @param scopes List of scopes to search through. The top level scopes
  *   should be first in the list with smaller nested scopes following it.
@@ -997,7 +994,7 @@ function searchByPathList(scope: Scope, pathList: string[]): ScopedItem[] {
 export function resolveIdentifier(identifier: string, scopes: Scope[]): ScopedItem[] {
   const result: Defs.Base[] = [];
   let i = scopes.length-1;
-
+  
   while (i>=0) {
     const scope = scopes[i];
     const matches = searchByPath(scope, identifier);
@@ -1016,25 +1013,25 @@ function resolveInterfaceName(interfaceName: string, scopes: Scope[]): ScopedInt
 
 /**
  * Flatten an interface and superinterfaces into one independent interface declaration.
- *
+ * 
  * This does not modify the source data structure.
- *
+ * 
  * @param identifier Dotted identifier name to resolve.
  * @param scopes List of scopes to search through. The top level scopes
  *   should be first in the list with smaller nested scopes following it.
- * @return The flattened interface declaration.
+ * @return The flattened interface declaration. 
  */
 export function flattenInterface(identifier: string, scopes: Scope[]): Defs.Interface {
   const interfaceMatches = resolveInterfaceName(identifier, scopes);
   let result: Defs.Interface = null;
-
+  
   const pathParts = identifier.split(/\./g);
   const name = pathParts[pathParts.length-1];
   const body: Defs.ObjectType = { type: Defs.Type.OBJECT_TYPE, members: [] };
-
+  
   result = {type: Defs.Type.INTERFACE, ambient: true, name: name, typeParameters: [], extends: [],
     export: false, objectType: body };
-
+    
   // Concatinate the members of each matched interface making sure to expand an type references to fully qualified references
   interfaceMatches.forEach( inter => {
     const interfaceCopy = _.cloneDeep(inter.item);
@@ -1048,10 +1045,10 @@ export function flattenInterface(identifier: string, scopes: Scope[]): Defs.Inte
     inter.extends.forEach( extendsItem => {
       const flatExtends = flattenInterface(extendsItem.name, match.scopes);
       const members = flatExtends.objectType.members;
-
+      
       const comment: Defs.WhiteSpace = { type: Defs.Type.WHITESPACE,value: "// " + extendsItem.name + "\n"};
       body.members.push(comment);
-
+      
       body.members = body.members.concat(members);
     });
 
@@ -1067,7 +1064,7 @@ export function expandTypeReferences(obj: Defs.Base, scopes: Scope[]): Defs.Base
 
 function expandTypeReferencesInPlace(obj: Defs.Base, scopes: Scope[]): Defs.Base {
   switch (obj.type) {
-
+    
     case Defs.Type.MODULE:
       const mod = <Defs.Module> obj;
       mod.members = mod.members.map( m => expandTypeReferencesInPlace(m, scopes) );
@@ -1084,7 +1081,7 @@ function expandTypeReferencesInPlace(obj: Defs.Base, scopes: Scope[]): Defs.Base
       class_.extends = <Defs.ObjectTypeRef> expandTypeReferencesInPlace(class_.extends, scopes);
       class_.objectType = <Defs.ObjectType> expandTypeReferencesInPlace(class_.objectType, scopes.concat( [class_] ) );
       return class_;
-
+        
     case Defs.Type.OBJECT_TYPE_REF:
       const objectTypeRef = <Defs.ObjectTypeRef> obj;
       const resolved = resolveIdentifier(objectTypeRef.name, scopes);
@@ -1094,77 +1091,77 @@ function expandTypeReferencesInPlace(obj: Defs.Base, scopes: Scope[]): Defs.Base
       const path = scopesToPath(resolved[0].scopes);
       objectTypeRef.name = (path === "" ? "" : path + ".") + objectTypeRef.name;
       return objectTypeRef;
-
+    
     case Defs.Type.OBJECT_TYPE:
       const objectType = <Defs.ObjectType> obj;
       objectType.members = objectType.members.map( m => expandTypeReferencesInPlace(m, scopes) );
       return objectType;
-
+      
     case Defs.Type.METHOD:
       const method = <Defs.Method> obj;
       method.signature = <Defs.FunctionType> expandTypeReferencesInPlace(method.signature, scopes);
       return method;
-
+      
     case Defs.Type.PARAMETER:
       const param = <Defs.Parameter> obj;
       param.parameterType = expandTypeReferencesInPlace(param.parameterType, scopes);
       return param;
-
+      
     case Defs.Type.PROPERTY:
       const prop = <Defs.Property> obj;
       prop.signature = expandTypeReferencesInPlace(prop.signature, scopes);
       return prop;
-
+      
     case Defs.Type.INDEX_METHOD:
       const indexMethod = <Defs.IndexMethod> obj;
       indexMethod.returnType = expandTypeReferencesInPlace(indexMethod.returnType, scopes);
       return indexMethod;
-
+      
     case Defs.Type.FUNCTION:
       const function_ = <Defs.Function> obj;
       function_.signature = <Defs.FunctionType> expandTypeReferencesInPlace(function_.signature, scopes);
       return function_;
-
+        
     case Defs.Type.FUNCTION_TYPE:
       const functionType = <Defs.FunctionType> obj;
       functionType.parameters = <Defs.Parameter[]> functionType.parameters.map( p => expandTypeReferencesInPlace(p, scopes) );
       functionType.returnType = expandTypeReferencesInPlace(functionType.returnType, scopes);
       return functionType;
-
+      
     case Defs.Type.TUPLE_TYPE:
       const tupleType = <Defs.TupleType> obj;
       tupleType.members = tupleType.members.map( m => expandTypeReferencesInPlace(m, scopes) );
       return tupleType;
-
+      
     case Defs.Type.UNION_TYPE:
       const unionType = <Defs.TupleType> obj;
       unionType.members = unionType.members.map( m => expandTypeReferencesInPlace(m, scopes) );
       return unionType;
-
+      
     case Defs.Type.ARRAY_TYPE:
       const arrayType = <Defs.ArrayType> obj;
       arrayType.member = expandTypeReferencesInPlace(arrayType.member, scopes);
       return arrayType;
-
+      
     case Defs.Type.TYPE_ALIAS:
       const typeAlias = <Defs.TypeAlias> obj;
       typeAlias.entity = <Defs.ObjectType | Defs.ObjectTypeRef> expandTypeReferencesInPlace(typeAlias.entity, scopes);
       return typeAlias;
-
+    
     case Defs.Type.AMBIENT_VARIABLE:
       const ambientVariable = <Defs.Variable> obj;
       ambientVariable.signature = expandTypeReferencesInPlace(ambientVariable.signature, scopes);
       return ambientVariable;
-
+      
     case Defs.Type.CONSTRUCTOR_TYPE:
       const constructorType = <Defs.ConstructorType> obj;
       constructorType.signature = <Defs.FunctionType> expandTypeReferencesInPlace(constructorType.signature, scopes);
       return constructorType;
-
+      
     default:
       break;
   }
-
+  
   return obj;
 }
 
@@ -1186,7 +1183,7 @@ function scopesToPath(scopes: Scope[]): string {
 
 /**
  * Convert a scoped interface object to dotted path.
- *
+ * 
  * @param  scopedInterface
  * @return Dotted path string.
  */
@@ -1196,21 +1193,21 @@ export function scopedItemToPath(scopedItem: ScopedItem): string {
 }
 
 /**
- *
+ * 
  */
-export function findAllSubinterfacesInScope(scopes: Scope[], interfaceName: string): ScopedInterface[] {
+export function findAllSubinterfacesInScope(scopes: Scope[], interfaceName: string): ScopedInterface[] {  
   const directSubinterfaces = findDirectSubinterfacesInScope(scopes, interfaceName);
   const otherSubinterfaces = directSubinterfaces.map( scopedSubInterface => {
     const subInterfaceName = scopedItemToPath(scopedSubInterface);
     return findAllSubinterfacesInScope(scopes, subInterfaceName);
   } ).reduce( (a,b) => a.concat(b), []);
-
+  
   return [...directSubinterfaces, ...otherSubinterfaces];
 }
 
 /**
  * Find direct subinterfaces of a interface in the scope.
- *
+ * 
  * @param  scopes        Scopes to search through.
  * @param  interfaceName complete dotted path naming the superinterface.
  * @return {ScopedInterface[]}               [description]
@@ -1226,10 +1223,10 @@ export function findDirectSubinterfacesInScope(scopes: Scope[], interfaceName: s
       return superMatches.some( sm => scopedItemToPath(sm) === interfaceName);
     });
   });
-
+  
   const scopedFoundSubinterfaces = foundSubinterfaces.map<ScopedInterface>(
     (m): ScopedInterface => ({ item: <Defs.Interface>m, scopes: scopes }) );
-
+    
   const moduleMembers = members.filter( m=> m.type === Defs.Type.MODULE );
   const otherSubinterfaces = moduleMembers.map( m => {
     return findDirectSubinterfacesInScope( [...scopes, m], interfaceName );
