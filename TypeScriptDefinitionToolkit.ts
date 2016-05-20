@@ -49,7 +49,8 @@ export module Defs {
     TYPE_QUERY = 22,
     CONSTRUCTOR_TYPE = 23,
     ARRAY_TYPE = 24,
-    PARENTHESIZED_TYPE = 25
+    PARENTHESIZED_TYPE = 25,
+    NAMESPACE = 26
   }
   
   /**
@@ -596,6 +597,12 @@ export function toString(objOrList: Defs.Base | Defs.Base[], level: number=0, in
         return dent + (mod.ambient ? "declare " : "") + (mod.export ? "export " : "") +
           "module " + (mod.external ? "'" + mod.name + "'" : mod.name) + " {\n" + listToString(mod.members, level+1) + "}\n";
         break;
+
+      case Defs.Type.NAMESPACE:
+        const mod = <Defs.Module> obj;
+        return dent + (mod.ambient ? "declare " : "") + (mod.export ? "export " : "") +
+          "module " + (mod.external ? "'" + mod.name + "'" : mod.name) + " {\n" + listToString(mod.members, level+1) + "}\n";
+        break;
         
       case Defs.Type.INTERFACE:
         const inter = <Defs.Interface> obj;
@@ -919,6 +926,9 @@ function getScopeMembers(scope: Scope): Defs.Base[] {
       case Defs.Type.MODULE:
         return (<Defs.Module> obj).members;
       
+      case Defs.Type.NAMESPACE:
+        return (<Defs.Module> obj).members;
+      
       default:
         return [];
     }
@@ -944,7 +954,11 @@ function searchByPathList(scope: Scope, pathList: string[]): ScopedItem[] {
       case Defs.Type.MODULE:
         return (<Defs.Module> item).name === first;
         break;
-        
+      
+      case Defs.Type.NAMESPACE:
+        return (<Defs.Module> item).name === first;
+        break;
+
       case Defs.Type.INTERFACE:
         return (<Defs.Interface> item).name === first;
         break;
@@ -969,6 +983,7 @@ function searchByPathList(scope: Scope, pathList: string[]): ScopedItem[] {
     return found.map( match => {
         switch(match.item.type) {
           case Defs.Type.MODULE:
+          case Defs.Type.NAMESPACE:
           case Defs.Type.INTERFACE:
           case Defs.Type.CLASS:
             return searchByPathList(match.item, rest);
@@ -1066,6 +1081,11 @@ function expandTypeReferencesInPlace(obj: Defs.Base, scopes: Scope[]): Defs.Base
   switch (obj.type) {
     
     case Defs.Type.MODULE:
+      const mod = <Defs.Module> obj;
+      mod.members = mod.members.map( m => expandTypeReferencesInPlace(m, scopes) );
+      return mod;
+
+    case Defs.Type.NAMESPACE:
       const mod = <Defs.Module> obj;
       mod.members = mod.members.map( m => expandTypeReferencesInPlace(m, scopes) );
       return mod;
@@ -1171,6 +1191,8 @@ function scopesToPath(scopes: Scope[]): string {
     switch(s.type) {
       case Defs.Type.MODULE:
         return (<Defs.Module>s).name;
+      case Defs.Type.NAMESPACE:
+        return (<Defs.Module>s).name;
       case Defs.Type.CLASS:
         return (<Defs.Class>s).name;
       case Defs.Type.INTERFACE:
@@ -1227,7 +1249,7 @@ export function findDirectSubinterfacesInScope(scopes: Scope[], interfaceName: s
   const scopedFoundSubinterfaces = foundSubinterfaces.map<ScopedInterface>(
     (m): ScopedInterface => ({ item: <Defs.Interface>m, scopes: scopes }) );
     
-  const moduleMembers = members.filter( m=> m.type === Defs.Type.MODULE );
+  const moduleMembers = members.filter( m=> (m.type === Defs.Type.MODULE || m.type === Defs.Type.NAMESPACE ) );
   const otherSubinterfaces = moduleMembers.map( m => {
     return findDirectSubinterfacesInScope( [...scopes, m], interfaceName );
   }).reduce( (a,b) => a.concat(b), []);
