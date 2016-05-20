@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Simon Edwards <simon@simonzone.com>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,7 @@ function roundTrip(test: nodeunit.Test, text: string): void {
   try {
     const defs = toolkit.parse(text);
     let newText = toolkit.toString(defs);
-    
+
     if (normalizeWhiteSpace(text) !== normalizeWhiteSpace(newText)) {
       console.log(JSON.stringify(defs));
       console.log("-IN---------------------------------------------------------");
@@ -517,7 +517,7 @@ export function testModuleClass(test: nodeunit.Test): void {
     class Bar {
     }  
   }
-`);  
+`);
 }
 
 export function testAmbientClassExtends(test: nodeunit.Test): void {
@@ -776,10 +776,10 @@ export function testFindInterface(test: nodeunit.Test): void {
       
     }
 `);
-  
+
   let searchResult = toolkit.findInterface(data, "Foo");
   test.equal(searchResult.length, 1);
-  
+
   test.done();
 }
 
@@ -801,10 +801,10 @@ export function testFindInterface2(test: nodeunit.Test): void {
       }
     }
 `);
-  
+
   let searchResult = toolkit.findInterface(data, "MegaMod.Foo");
   test.equal(searchResult.length, 1);
-  
+
   test.done();
 }
 
@@ -821,13 +821,13 @@ export function testResolveIdentifier(test: nodeunit.Test): void {
       }
     }
 `);
-  
+
   const megaResult = toolkit.resolveIdentifier("MegaMod", [data]);
   test.equal(megaResult.length, 1);
-  
+
   const fooResult = toolkit.resolveIdentifier("Foo", megaResult[0].scopes.concat( [megaResult[0].item] ));
   test.equal(fooResult.length, 1);
-  
+
   test.done();
 }
 
@@ -847,12 +847,12 @@ export function testResolveIdentifier2(test: nodeunit.Test): void {
       }
     }
 `);
-  
+
   const megaResult = toolkit.resolveIdentifier("MegaMod", [data]);
   test.equal(megaResult.length, 1);
   const fooResult = toolkit.resolveIdentifier("MetaVars.Foo", megaResult[0].scopes.concat( [megaResult[0].item] ) );
   test.equal(fooResult.length, 1);
-  
+
   test.done();
 }
 
@@ -1160,4 +1160,58 @@ export function testParenType(test: nodeunit.Test): void {
   roundTrip(test, `interface Foo {
   bar: (T|F)[];
 }`);
+}
+
+export function testNamespace(test: nodeunit.Test): void {
+  debugger;
+  roundTrip(test, `
+    declare namespace Fourth {
+      export interface ApiIndex_1 {
+        ProductName:string;
+        HttpHeaderList?:any;
+        UrlParameterList?:any;
+        ApiIndexLinkList:any;
+      }
+    }
+`);
+}
+
+export function testNamespaceWithReferences(test: nodeunit.Test): void {
+  debugger;
+  roundTrip(test, `
+    declare namespace Fourth {
+      export interface LogOn {
+        ServiceId: string;
+        KeepMeLoggedIn?: boolean;
+        Token?: Fourth.AccessToken_14;
+      }
+
+      export interface AccessToken_14 {
+        AccessToken?: string;
+        RefreshToken?: string;
+        TokenType?: string;
+      }
+
+      export interface LogOnUserMobile_4 extends Fourth.LogOn {
+        Identity: string;
+        AuthenticationType: Fourth.AuthenticationType;
+        AuthenticationToken?: string;
+        ApplicationVersion: string;
+        Device?: Fourth.MobileDevice_4;
+      }
+      
+      export enum AuthenticationType {Test, Facebook, Google, SdkServiceApiAccess, LinkedIn, EmailPassword, MicrosoftOnline, Integration, MicrosoftExchange}
+  
+      export interface Device_4 {
+        Id?: string;
+        Name?: string;
+      }
+  
+      export interface MobileDevice_4 extends Fourth.Device_4 {
+        Type: Fourth.MobileDeviceType;
+        NotificationVersion?: Fourth.NotificationVersion;
+        PushNotificationId?: string;
+      }
+    }
+`);
 }

@@ -43,6 +43,7 @@ var TYPE_QUERY = 22;
 var CONSTRUCTOR_TYPE = 23;
 var ARRAY_TYPE = 24;
 var PARENTHESIZED_TYPE = 25;
+var NAMESPACE = 26;
 
 function convertArrayType(baseType, arrayParts) {
   if (arrayParts === null || arrayParts.length === 0) {
@@ -196,6 +197,8 @@ DOT = "."
 
 MODULE = "module"
 
+NAMESPACE = "namespace"
+
 INTERFACE = "interface"
 
 CLASS = "class"
@@ -271,6 +274,10 @@ ambient_external_module_declaration
     = DECLARE __ MODULE __ name:StringLiteral _ LBRACE members:(ambient_external_module_element)* RBRACE
     {
         return {type: MODULE, name: name, members: members, ambient: true, external: true};
+    }
+    / DECLARE __ NAMESPACE __ name:Identifier _ LBRACE members:(ambient_external_module_element)* RBRACE
+    {
+        return {type: NAMESPACE, name: name, members: members, ambient: true, external: true};
     }
 
 ambient_external_module_element
