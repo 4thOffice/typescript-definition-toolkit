@@ -277,7 +277,7 @@ ambient_external_module_declaration
     }
     / DECLARE __ NAMESPACE __ name:Identifier _ LBRACE members:(ambient_external_module_element)* RBRACE
     {
-        return {type: NAMESPACE, name: name, members: members, ambient: true, external: true};
+        return {type: NAMESPACE, name: name, members: members, ambient: true, external: false};
     }
 
 ambient_external_module_element

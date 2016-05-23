@@ -626,7 +626,7 @@ export function toString(objOrList: Defs.Base | Defs.Base[], level: number=0, in
       case Defs.Type.NAMESPACE:
         const nspace = <Defs.Namespace> obj;
         return dent + (nspace.ambient ? "declare " : "") + (nspace.export ? "export " : "") +
-          "namespace " + (nspace.external ? "'" + nspace.name + "'" : nspace.name) + " {\n" + listToString(nspace.members, level+1) + "}\n";
+          "namespace " + nspace.name + " {\n" + listToString(nspace.members, level+1) + "}\n";
         break;
 
       case Defs.Type.INTERFACE:
