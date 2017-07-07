@@ -30,7 +30,6 @@
     "nodeunit": "^0.9.1",
     "pegjs": "^0.8.0",
     "source-map-support": "^0.3.1",
-    "tsd": "^0.6.0-beta.5",
-    "typescript": "2.3.4"
+    "tsd": "^0.6.0-beta.5"
   }
 }
