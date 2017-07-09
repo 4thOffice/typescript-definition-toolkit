@@ -15,8 +15,8 @@
  */
 "use strict";
 
-import _ = require("lodash");
-import typescript_definition = require("./typescript_definition");
+import * as _ from "lodash";
+import * as typescript_definition from "./typescript_definition";
 
 export module Defs {
   
